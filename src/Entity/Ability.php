@@ -3,14 +3,14 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\TypeRepository;
+use App\Repository\AbilityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: TypeRepository::class)]
+#[ORM\Entity(repositoryClass: AbilityRepository::class)]
 #[ApiResource]
-class Type
+class Ability
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -20,8 +20,11 @@ class Type
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\ManyToMany(targetEntity: Pokemon::class, inversedBy: 'types')]
+    #[ORM\ManyToMany(targetEntity: Pokemon::class, inversedBy: 'abilities')]
     private Collection $pokemon;
+
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
 
     public function __construct()
     {
@@ -48,12 +51,12 @@ class Type
     /**
      * @return Collection<int, Pokemon>
      */
-    public function getPokemon(): Collection
+    public function getpokemon(): Collection
     {
         return $this->pokemon;
     }
 
-    public function addPokemon(Pokemon $pokemon): self
+    public function addpokemon(Pokemon $pokemon): self
     {
         if (!$this->pokemon->contains($pokemon)) {
             $this->pokemon->add($pokemon);
@@ -62,9 +65,21 @@ class Type
         return $this;
     }
 
-    public function removePokemon(Pokemon $pokemon): self
+    public function removepokemon(Pokemon $pokemon): self
     {
         $this->pokemon->removeElement($pokemon);
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
 
         return $this;
     }

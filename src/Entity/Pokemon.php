@@ -23,12 +23,20 @@ class Pokemon
     #[ORM\Column(length: 255)]
     private ?string $sprite = null;
 
-    #[ORM\ManyToMany(targetEntity: Type::class, mappedBy: 'name')]
+
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
+
+    #[ORM\ManyToMany(targetEntity: Type::class, mappedBy: 'pokemon')]
     private Collection $types;
+
+    #[ORM\ManyToMany(targetEntity: Ability::class, mappedBy: 'pokemon')]
+    private Collection $abilities;
 
     public function __construct()
     {
         $this->types = new ArrayCollection();
+        $this->abilities = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -60,6 +68,18 @@ class Pokemon
         return $this;
     }
 
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Type>
      */
@@ -72,7 +92,7 @@ class Pokemon
     {
         if (!$this->types->contains($type)) {
             $this->types->add($type);
-            $type->addName($this);
+            $type->addPokemon($this);
         }
 
         return $this;
@@ -81,7 +101,34 @@ class Pokemon
     public function removeType(Type $type): self
     {
         if ($this->types->removeElement($type)) {
-            $type->removeName($this);
+            $type->removePokemon($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Ability>
+     */
+    public function getAbilities(): Collection
+    {
+        return $this->abilities;
+    }
+
+    public function addAbility(Ability $ability): self
+    {
+        if (!$this->abilities->contains($ability)) {
+            $this->abilities->add($ability);
+            $ability->addPokemon($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAbility(Ability $ability): self
+    {
+        if ($this->abilities->removeElement($ability)) {
+            $ability->removePokemon($this);
         }
 
         return $this;
