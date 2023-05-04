@@ -52,7 +52,7 @@ class GetPokemonCommand extends Command
 
         $response = $this->client->request(
             'GET',
-            'https://pokeapi.co/api/v2/pokemon?limit=493&offset=0'
+            'https://pokeapi.co/api/v2/pokemon?limit=151&offset=0'
         );
 
         $allPokemon = $response->getContent();
@@ -65,8 +65,7 @@ class GetPokemonCommand extends Command
 
                 $pokemonEntity = new Pokemon();
                 $pokemonEntity->setName($pokemon['name']);
-                $pokemonEntity->setDescription('bep');
-                $pokemonEntity->setSprite($pokemon['url']);
+//                $pokemonEntity->setDescription('bep');
                 $this->entityManager->persist($pokemonEntity);
                 $this->entityManager->flush();
 
@@ -80,14 +79,16 @@ class GetPokemonCommand extends Command
 
             $onePokemon = json_decode($onePokemon, true);
 
+//            dd($onePokemon);
 
+            $pokemonEntity->setTheOrder($onePokemon['order']);
+            $pokemonEntity->setSprite($onePokemon['sprites']['front_default']);
             foreach($onePokemon['types'] as $type){
                 $type = $type['type']['name'];
 
                 $typeEntity = $this->entityManager->getRepository(Type::class)->findOneByName($type);
 
                 if (!$typeEntity){
-                    dump($type);
                     $typeEntity = new Type();
                     $typeEntity->setName($type);
                     $this->entityManager->persist($typeEntity);
@@ -99,7 +100,6 @@ class GetPokemonCommand extends Command
 
             foreach($onePokemon['abilities'] as $ability){
                 $ability = $ability['ability']['name'];
-//                dump($ability);
 
                 $abilityEntity = $this->entityManager->getRepository(Ability::class)->findOneByName($ability);
 

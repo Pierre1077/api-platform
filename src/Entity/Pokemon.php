@@ -35,6 +35,9 @@ class Pokemon
     #[ORM\ManyToMany(targetEntity: Ability::class, mappedBy: 'pokemon')]
     private Collection $abilities;
 
+    #[ORM\Column(length: 255)]
+    private ?string $theOrder = null;
+
     public function __construct()
     {
         $this->types = new ArrayCollection();
@@ -132,6 +135,18 @@ class Pokemon
         if ($this->abilities->removeElement($ability)) {
             $ability->removePokemon($this);
         }
+
+        return $this;
+    }
+
+    public function getTheOrder(): ?string
+    {
+        return $this->theOrder;
+    }
+
+    public function setTheOrder(string $theOrder): self
+    {
+        $this->theOrder = $theOrder;
 
         return $this;
     }
