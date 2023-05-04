@@ -61,13 +61,16 @@ class GetPokemonCommand extends Command
 
         foreach ($allPokemon['results'] as $pokemon){
 
-            $name = $pokemon['name'];
 
+            $pokemonEntity = $this->entityManager->getRepository(Pokemon::class)->findOneByName($pokemon['name']);
+
+            if (!$pokemonEntity) {
                 $pokemonEntity = new Pokemon();
                 $pokemonEntity->setName($pokemon['name']);
 //                $pokemonEntity->setDescription('bep');
                 $this->entityManager->persist($pokemonEntity);
                 $this->entityManager->flush();
+            }
 
 
             $response = $this->client->request(
@@ -82,20 +85,29 @@ class GetPokemonCommand extends Command
 //            dd($onePokemon);
 
             $pokemonEntity->setTheOrder($onePokemon['order']);
+            if ($onePokemon['sprites']['front_default'] == null || !isset($onePokemon['sprites']['front_default']) || !isset($onePokemon['sprites'])) {
+                dd($onePokemon);
+            }
             $pokemonEntity->setSprite($onePokemon['sprites']['front_default']);
             foreach($onePokemon['types'] as $type){
-                $type = $type['type']['name'];
 
+
+                $type = $type['type']['name'];
                 $typeEntity = $this->entityManager->getRepository(Type::class)->findOneByName($type);
 
                 if (!$typeEntity){
                     $typeEntity = new Type();
                     $typeEntity->setName($type);
+
+                    $this->entityManager->persist($typeEntity);
+                    $this->entityManager->flush();
+                } else {
+                    $pokemonEntity->addType($typeEntity);
                     $this->entityManager->persist($typeEntity);
                     $this->entityManager->flush();
                 }
 
-                $pokemonEntity->addType($typeEntity);
+
             }
 
             foreach($onePokemon['abilities'] as $ability){
@@ -107,11 +119,15 @@ class GetPokemonCommand extends Command
                 if (!$abilityEntity){
                     $abilityEntity = new Ability();
                     $abilityEntity->setName($ability);
-                    $abilityEntity->setDescription('bep');
+                    $this->entityManager->persist($abilityEntity);
+                    $this->entityManager->flush();
+                } else {
+
+                    $pokemonEntity->addAbility($abilityEntity);
+
                     $this->entityManager->persist($abilityEntity);
                     $this->entityManager->flush();
                 }
-                $pokemonEntity->addAbility($abilityEntity);
 
             }
 

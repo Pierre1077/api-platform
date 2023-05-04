@@ -8,8 +8,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\Get;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 #[ORM\Entity(repositoryClass: PokemonRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read']]
+)]
 
 
 class Pokemon
@@ -17,25 +21,32 @@ class Pokemon
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read'])]
     private ?string $sprite = null;
 
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read'])]
     private ?string $description = null;
 
     #[ORM\ManyToMany(targetEntity: Type::class, mappedBy: 'pokemon')]
+    #[Groups(['read'])]
     private Collection $types;
 
     #[ORM\ManyToMany(targetEntity: Ability::class, mappedBy: 'pokemon')]
+    #[Groups(['read'])]
     private Collection $abilities;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read'])]
     private ?string $theOrder = null;
 
     public function __construct()
