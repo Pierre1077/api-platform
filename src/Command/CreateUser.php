@@ -18,7 +18,7 @@ class CreateUser extends Command
 {
 
     protected static $defaultName = 'app:user:create';
-    protected static $defaultDescription = 'create user';
+    protected static $defaultDescription = 'create user for API';
 
     private EntityManagerInterface $em;
     private UserPasswordHasherInterface $hasher;
